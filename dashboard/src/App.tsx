@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useWebSocket } from "./hooks/useWebSocket";
+import { useTheme } from "./hooks/useTheme";
 import Sidebar from "./components/Sidebar";
 import TopBar from "./components/TopBar";
 import Overview from "./components/Overview";
@@ -16,10 +17,11 @@ export type Page = "overview" | "live" | "portfolio" | "journal" | "backtest" | 
 export default function App() {
   const { events, connected } = useWebSocket("ws://localhost:8000/ws");
   const [page, setPage] = useState<Page>("overview");
+  const { theme, toggle } = useTheme();
 
   return (
     <div className="app-layout">
-      <Sidebar page={page} onNav={setPage} />
+      <Sidebar page={page} onNav={setPage} theme={theme} onThemeToggle={toggle} />
       <div className="app-main">
         <TopBar page={page} connected={connected} />
         <div className="page-body">

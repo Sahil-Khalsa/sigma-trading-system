@@ -1,7 +1,7 @@
-import { LayoutDashboard, Radio, BarChart3, BookOpen, FlaskConical, LineChart, Bell } from "lucide-react";
+import { LayoutDashboard, Radio, BarChart3, BookOpen, FlaskConical, LineChart, Bell, Sun, Moon } from "lucide-react";
 import type { Page } from "../App";
 
-type Props = { page: Page; onNav: (p: Page) => void };
+type Props = { page: Page; onNav: (p: Page) => void; theme: "dark" | "light"; onThemeToggle: () => void };
 
 const NAV = [
   { id: "overview",   label: "Overview",      icon: LayoutDashboard },
@@ -13,7 +13,7 @@ const NAV = [
   { id: "alerts",     label: "Alerts",        icon: Bell },
 ] as const;
 
-export default function Sidebar({ page, onNav }: Props) {
+export default function Sidebar({ page, onNav, theme, onThemeToggle }: Props) {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
@@ -39,6 +39,13 @@ export default function Sidebar({ page, onNav }: Props) {
       </nav>
 
       <div className="sidebar-footer">
+        <button className="theme-toggle" onClick={onThemeToggle}>
+          <span className="theme-toggle-label">
+            {theme === "dark" ? <Moon size={13} /> : <Sun size={13} />}
+            {theme === "dark" ? "Dark Mode" : "Light Mode"}
+          </span>
+          <div className={`theme-toggle-switch ${theme === "light" ? "on" : ""}`} />
+        </button>
         <div className="sidebar-badge">
           <div className="sidebar-badge-dot" />
           Paper Trading Mode
