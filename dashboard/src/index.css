@@ -164,6 +164,33 @@ html, body, #root {
   gap: 20px;
 }
 
+/* ─── Mobile Bottom Nav ──────────────────────────────────────────────── */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  padding: 0 4px;
+  justify-content: space-around;
+  align-items: center;
+}
+.mobile-nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 10px; border-radius: var(--radius);
+  color: var(--text-muted); cursor: pointer; transition: color 0.15s;
+  font-size: 9px; font-weight: 500; min-width: 44px; text-align: center;
+}
+.mobile-nav-item.active { color: var(--green); }
+.mobile-nav-item svg { width: 18px; height: 18px; }
+
+@media (max-width: 600px) {
+  .mobile-nav { display: flex; }
+  .page-body  { padding-bottom: 66px; } /* clearance for bottom nav */
+}
+
 /* ─── Sidebar ────────────────────────────���────────────────────────────── */
 .sidebar {
   width: var(--sidebar-w);
@@ -1070,6 +1097,7 @@ table.trade-table {
 .journal-stat:last-child { border-right: none; }
 
 /* ─── Mobile Responsive ───────────────────────────────────────────────── */
+/* ─── Responsive: Tablet 900px ──────────────────────────────────────────── */
 @media (max-width: 900px) {
   :root { --sidebar-w: 56px; }
 
@@ -1084,10 +1112,10 @@ table.trade-table {
   .sidebar-logo { justify-content: center; padding: 16px 0; }
   .sidebar-logo-icon { margin: 0; }
 
-  .stat-grid   { grid-template-columns: repeat(2, 1fr); }
+  .stat-grid    { grid-template-columns: repeat(2, 1fr); }
   .account-grid { grid-template-columns: repeat(2, 1fr); }
-  .grid-2      { grid-template-columns: 1fr; }
-  .grid-3      { grid-template-columns: repeat(2, 1fr); }
+  .grid-2       { grid-template-columns: 1fr; }
+  .grid-3       { grid-template-columns: repeat(2, 1fr); }
 
   .page-body { padding: 14px; gap: 14px; }
 
@@ -1096,17 +1124,76 @@ table.trade-table {
 
   .journal-stats { flex-wrap: wrap; }
   .journal-stat  { min-width: 50%; border-right: none; border-bottom: 1px solid var(--border); }
+
+  /* Live feed: stack columns */
+  .live-feed { flex-direction: column; }
+  .live-left, .live-right { width: 100%; max-height: 50vh; }
+
+  /* Position cards: 1 column */
+  .positions-grid { grid-template-columns: 1fr; }
+
+  /* Backtest: stack form + chart */
+  .backtest-layout { flex-direction: column; }
+  .backtest-form   { width: 100%; }
 }
 
+/* ─── Responsive: Mobile 600px ──────────────────────────────────────────── */
 @media (max-width: 600px) {
+  :root { --sidebar-w: 0px; --topbar-h: 52px; }
+
+  /* Hide sidebar entirely, show hamburger area */
+  .sidebar { display: none; }
+
   .stat-grid    { grid-template-columns: 1fr 1fr; }
   .account-grid { grid-template-columns: 1fr; }
-  .trade-levels { gap: 6px; }
-  .topbar       { padding: 0 14px; }
+  .trade-levels { flex-wrap: wrap; gap: 6px; }
+  .topbar       { padding: 0 12px; gap: 8px; }
   .page-body    { padding: 10px; gap: 10px; }
 
-  .trade-table th:nth-child(n+6),
-  .trade-table td:nth-child(n+6) { display: none; }
+  /* Topbar: hide signal selector on very small screens */
+  .topbar-select:last-of-type { display: none; }
+
+  /* Tables: hide less important columns */
+  .trade-table th:nth-child(n+5),
+  .trade-table td:nth-child(n+5) { display: none; }
+
+  /* Overview stat cards: full width */
+  .stat-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card { padding: 14px; }
+  .stat-value { font-size: 22px; }
+
+  /* Charts: reduce height on mobile */
+  .chart-card { padding: 14px; }
+
+  /* Agent trace: compact */
+  .trace-step { padding: 10px 12px; }
+
+  /* Signal pills: wrap */
+  .signal-list { gap: 6px; }
+
+  /* Journal expandable rows */
+  .journal-expand { font-size: 11px; }
+
+  /* Alerts: stack footer */
+  .alerts-footer { flex-direction: column; gap: 4px; align-items: flex-start; }
+  .alerts-header { flex-direction: column; align-items: flex-start; }
+}
+
+/* ─── Responsive: Small Mobile 480px ───────────────────────────────────── */
+@media (max-width: 480px) {
+  .stat-grid    { grid-template-columns: 1fr; }
+  .account-grid { grid-template-columns: 1fr; }
+
+  .topbar-title { font-size: 14px; }
+  .topbar-title svg { width: 15px; height: 15px; }
+
+  /* Fire signal button: icon only */
+  .btn-green span { display: none; }
+
+  .trade-table th:nth-child(n+4),
+  .trade-table td:nth-child(n+4) { display: none; }
+
+  .backtest-result-grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* ─── Analytics Page ───────────────────────────────────────── */
