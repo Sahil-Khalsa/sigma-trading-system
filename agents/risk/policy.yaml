@@ -1,0 +1,53 @@
+risk_policy:
+  # Position sizing
+  max_position_size_pct: 0.10       # max 10% of portfolio per trade
+  max_open_positions: 5             # no more than 5 concurrent positions
+  max_sector_concentration: 0.40   # max 40% in one sector
+
+  # Daily limits
+  max_daily_trades: 20
+  max_daily_loss_pct: 0.02         # halt all trading at 2% daily drawdown
+
+  # Signal quality
+  min_confidence_threshold: 0.70   # reject any thesis below this
+  min_target_to_stop_ratio: 1.5    # reward:risk must be >= 1.5
+
+  # Hard blocks
+  blocked_symbols: []              # manual override — add symbols to block here
+  paper_trading_only: true         # safety flag — must be true until fully validated
+
+  # Sector map for concentration check (extend as needed)
+  sector_map:
+    AAPL: Technology
+    MSFT: Technology
+    NVDA: Technology
+    GOOGL: Technology
+    META: Technology
+    AMD: Technology
+    INTC: Technology
+    TSLA: Consumer Cyclical
+    AMZN: Consumer Cyclical
+    NFLX: Communication Services
+    JPM: Financial Services
+    BAC: Financial Services
+    GS: Financial Services
+    XOM: Energy
+    CVX: Energy
+    JNJ: Healthcare
+    UNH: Healthcare
+    PFE: Healthcare
+    GOOGL: Technology
+    META: Technology
+    AMD: Technology
+    CRM: Technology
+    SNOW: Technology
+    ARM: Technology
+    PLTR: Technology
+    SHOP: Technology
+    SQ: Financial Services
+    COIN: Financial Services
+    HOOD: Financial Services
+    JPM: Financial Services
+    NFLX: Communication Services
+    UBER: Consumer Cyclical
+    RBLX: Communication Services

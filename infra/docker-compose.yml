@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: sigma_postgres
+    environment:
+      POSTGRES_USER: sigma
+      POSTGRES_PASSWORD: sigma_pass
+      POSTGRES_DB: sigma_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - sigma_postgres_data:/var/lib/postgresql/data
+      - ../memory/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sigma -d sigma_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: sigma_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - sigma_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  sigma_postgres_data:
+  sigma_redis_data:

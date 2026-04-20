@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sigma
+      POSTGRES_PASSWORD: sigma_pass
+      POSTGRES_DB: sigma_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./memory/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sigma -d sigma_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+
+  sigma:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://sigma:sigma_pass@postgres:5432/sigma_db
+    volumes:
+      - ./agents/risk/policy.yaml:/app/agents/risk/policy.yaml
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  dashboard:
+    build: ./dashboard
+    depends_on:
+      - sigma
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:
