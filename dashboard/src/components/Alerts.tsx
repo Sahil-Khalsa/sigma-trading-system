@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bell, CheckCircle, AlertTriangle, XCircle, Info } from "lucide-react";
 
-const API = "http://localhost:8000";
+import { API_URL as API } from "../config";
 
 interface Alert {
   ts: string;

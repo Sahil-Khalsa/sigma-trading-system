@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useWebSocket } from "./hooks/useWebSocket";
+import { WS_URL } from "./config";
 import { useTheme } from "./hooks/useTheme";
 import { LayoutDashboard, Radio, BarChart3, LineChart, Bell } from "lucide-react";
 import Sidebar from "./components/Sidebar";
@@ -24,7 +25,7 @@ const MOBILE_NAV: { id: Page; label: string; icon: React.ElementType }[] = [
 ];
 
 export default function App() {
-  const { events, connected } = useWebSocket("ws://localhost:8000/ws");
+  const { events, connected } = useWebSocket(WS_URL);
   const [page, setPage] = useState<Page>("overview");
   const { theme, toggle } = useTheme();
 

@@ -3,6 +3,7 @@ import { TrendingUp, Zap, Brain, DollarSign, Activity } from "lucide-react";
 import type { WSEvent } from "../hooks/useWebSocket";
 import SignalFeed from "./SignalFeed";
 import AgentTrace from "./AgentTrace";
+import { API_URL } from "../config";
 
 type Props = { events: WSEvent[] };
 
@@ -12,7 +13,7 @@ export default function Overview({ events }: Props) {
   const [account, setAccount] = useState<Account | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/portfolio/state")
+    fetch(`${API_URL}/portfolio/state`)
       .then(r => r.json())
       .then(d => setAccount(d.account))
       .catch(() => {});

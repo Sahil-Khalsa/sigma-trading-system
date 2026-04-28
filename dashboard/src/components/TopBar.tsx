@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Zap, LayoutDashboard, Radio, BarChart3, BookOpen, FlaskConical, LineChart, Bell } from "lucide-react";
 import type { Page } from "../App";
+import { API_URL } from "../config";
 
 const PAGE_META: Record<Page, { label: string; icon: React.ElementType }> = {
   overview:   { label: "Overview",      icon: LayoutDashboard },
@@ -37,7 +38,7 @@ export default function TopBar({ page, connected }: Props) {
     setFiring(true);
     try {
       await fetch(
-        `http://localhost:8000/test/fire-signal?symbol=${symbol}&signal_type=${signal}&value=3.2&price=${PRICES[symbol]}`,
+        `${API_URL}/test/fire-signal?symbol=${symbol}&signal_type=${signal}&value=3.2&price=${PRICES[symbol]}`,
         { method: "POST" }
       );
     } catch (_) { /* server may not be up during demo */ }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FlaskConical, Play, TrendingUp, BarChart2 } from "lucide-react";
+import { API_URL } from "../config";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine,
 } from "recharts";
@@ -31,7 +32,7 @@ export default function Backtest() {
   const run = async () => {
     setLoading(true); setResult(null); setError(null);
     try {
-      const res = await fetch("http://localhost:8000/backtest/run", {
+      const res = await fetch(`${API_URL}/backtest/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ symbol, start_date: startDate, end_date: endDate }),

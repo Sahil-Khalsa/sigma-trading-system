@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -16,10 +18,19 @@ app = FastAPI(
     description="Multi-Agent AI Trading System — Real-time signal detection, autonomous agent reasoning, and risk management.",
 )
 
+_default_origins = [
+    "http://localhost:5173",
+    "http://localhost:80",
+    "http://localhost",
+]
+_extra = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+_origin_regex = os.getenv("CORS_ORIGIN_REGEX") or r"https://.*\.vercel\.app"
+
 app.add_middleware(RateLimitMiddleware, calls=120, period=60)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:80", "http://localhost"],
+    allow_origins=_default_origins + _extra,
+    allow_origin_regex=_origin_regex,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )

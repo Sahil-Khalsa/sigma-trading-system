@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { DollarSign, TrendingUp, TrendingDown, Briefcase } from "lucide-react";
+import { API_URL } from "../config";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
@@ -27,11 +28,11 @@ export default function Portfolio() {
   const [trades, setTrades] = useState<ClosedTrade[]>([]);
 
   const load = () => {
-    fetch("http://localhost:8000/portfolio/state")
+    fetch(`${API_URL}/portfolio/state`)
       .then(r => r.json())
       .then(d => { setAccount(d.account); setPositions(d.positions ?? []); })
       .catch(() => {});
-    fetch("http://localhost:8000/trades/?limit=30")
+    fetch(`${API_URL}/trades/?limit=30`)
       .then(r => r.json())
       .then(setTrades)
       .catch(() => {});

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BookOpen, ChevronDown, ChevronUp, TrendingUp } from "lucide-react";
+import { API_URL } from "../config";
 
 type Step = { iteration: number; tool_name: string; reasoning: string };
 
@@ -22,7 +23,7 @@ export default function TradeJournal() {
   const [investigation, setInvestigation] = useState<Investigation | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/trades/?limit=50")
+    fetch(`${API_URL}/trades/?limit=50`)
       .then(r => r.json())
       .then(setTrades)
       .catch(() => {});
@@ -31,7 +32,7 @@ export default function TradeJournal() {
   const toggleTrace = async (id: number) => {
     if (expanded === id) { setExpanded(null); setInvestigation(null); return; }
     try {
-      const res = await fetch(`http://localhost:8000/trades/${id}/investigation`);
+      const res = await fetch(`${API_URL}/trades/${id}/investigation`);
       const data = await res.json();
       setInvestigation(data);
       setExpanded(id);

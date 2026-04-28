@@ -4,7 +4,7 @@ import {
   CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell,
 } from "recharts";
 
-const API = "http://localhost:8000";
+import { API_URL as API } from "../config";
 
 interface Summary {
   total_trades: number;
