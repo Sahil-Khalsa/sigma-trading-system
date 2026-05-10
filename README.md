@@ -14,9 +14,9 @@
   <img src="https://img.shields.io/badge/CI-GitHub_Actions-2088ff?style=for-the-badge&logo=githubactions&logoColor=white" />
 </p>
 
-**SIGMA** is a full-stack, production-grade autonomous trading system that monitors 20 stocks in real time, detects technical signals, and routes them through a LangGraph ReAct AI agent that *reasons* about each opportunity before deciding to trade — with a live React dashboard showing every decision as it happens.
+**SIGMA** is a full-stack, production-grade autonomous trading system that monitors 20 stocks in real time, detects technical signals, and routes them through a LangGraph ReAct AI agent that *reasons* about each opportunity before deciding to trade. Every decision streams live to a React dashboard as it happens.
 
-> Built end-to-end with real API integrations, a normalized PostgreSQL schema, WebSocket broadcasting, CI/CD pipelines, and Docker deployment. Not a tutorial — a complete system.
+> Built end-to-end with real API integrations, a normalized PostgreSQL schema, WebSocket broadcasting, CI/CD pipelines, and Docker deployment. Not a tutorial. A complete system.
 
 [Architecture](#-system-architecture) · [Demo](#-dashboard-pages) · [AI Agent](#-the-ai-brain-langgraph-react-agent) · [Signals](#-signal-detection-engine) · [Risk](#-risk-management) · [Quick Start](#-quick-start)
 
@@ -75,7 +75,7 @@ Most trading bots are 30 lines of Python: *"if RSI < 30, buy."* SIGMA is a diffe
 ║                               │ TradeThesis (BUY) | PassDecision     ║
 ║                               ▼                                      ║
 ║  ┌────────────────────────────────────────────────────────┐         ║
-║  │              Risk Agent  (Deterministic — NO LLM)       │         ║
+║  │              Risk Agent  (Deterministic, NO LLM)        │         ║
 ║  │   8 hard policy checks: loss limits · position caps ·   │         ║
 ║  │   sector concentration · confidence floor · R:R ratio   │         ║
 ║  └───────────────────────────┬────────────────────────────┘         ║
@@ -101,18 +101,18 @@ Most trading bots are 30 lines of Python: *"if RSI < 30, buy."* SIGMA is a diffe
 ╚══════════════════════════════════════════════════════════════════════╝
 ```
 
-Everything runs in **one Python process** via `asyncio.gather()` — no Redis, no Celery, no microservices. Five long-lived coroutines cooperate on a single event loop.
+Everything runs in **one Python process** via `asyncio.gather()`. No Redis, no Celery, no microservices. Five long-lived coroutines cooperate on a single event loop.
 
 ---
 
-## The AI Brain — LangGraph ReAct Agent
+## The AI Brain: LangGraph ReAct Agent
 
-This is the core differentiator. When a signal fires, the system doesn't blindly trade — it invokes a **LangGraph ReAct state machine** backed by an LLM.
+This is the core differentiator. When a signal fires, the system doesn't blindly trade. It invokes a **LangGraph ReAct state machine** backed by an LLM.
 
 ### How the Agent Thinks
 
 ```
-User fires signal: NVDA volume_surge @ $875.30
+Signal: NVDA volume_surge @ $875.30
       │
       ▼
 reason_node: "Volume surge detected on NVDA. Let me check news first."
@@ -143,17 +143,17 @@ conclude_node: BUY — confidence 0.82
 | Property | Value |
 |---|---|
 | Framework | LangGraph 0.2 (StateGraph with typed nodes) |
-| State | `StrategyAgentState` TypedDict — persists across all nodes |
-| Loop control | Hard cap at 6 tool calls/invocation — prevents runaway LLM cost |
+| State | `StrategyAgentState` TypedDict, persists across all nodes |
+| Loop control | Hard cap at 6 tool calls per invocation, prevents runaway LLM cost |
 | Output | Structured `TradeThesis(action, confidence, reasoning, stop_loss, take_profit)` |
 | Auditability | Full message history + tool outputs saved to PostgreSQL per trade |
-| Cost guard | Budget cap means each decision costs ~$0.01-0.02 max |
+| Cost guard | Each decision costs ~$0.01-0.02 max |
 
 ---
 
 ## Signal Detection Engine
 
-**9 patterns detected in pure Python** — no pandas-ta, no external libraries. Built on rolling deques for O(1) updates.
+**9 patterns detected in pure Python**, no pandas-ta, no external libraries. Built on rolling deques for O(1) updates.
 
 | Signal | Logic | Direction |
 |---|---|---|
@@ -167,7 +167,7 @@ conclude_node: BUY — confidence 0.82
 | **MACD Bearish Cross** | MACD crosses below signal line | SHORT |
 | **BB Squeeze** | `(upper_band - lower_band) / middle_band < 0.03` | LONG |
 
-**Cooldown system**: each `(symbol, signal_type)` pair is locked for 5 minutes after firing — prevents duplicate signals on volatile bars.
+**Cooldown system**: each `(symbol, signal_type)` pair is locked for 5 minutes after firing. Prevents duplicate signals on volatile bars.
 
 **Buffer minimum**: MACD requires 26 bars of history. Detector refuses to evaluate until the buffer is deep enough.
 
@@ -175,7 +175,7 @@ conclude_node: BUY — confidence 0.82
 
 ## Risk Management
 
-The `RiskAgent` runs **before every trade execution** — 8 deterministic checks, zero LLM involvement. If any check fails, the trade is blocked and the reason is logged.
+The `RiskAgent` runs **before every trade execution**: 8 deterministic checks, zero LLM involvement. If any check fails, the trade is blocked and the reason is logged.
 
 ```
 ✓  1. Symbol not on blocked list
@@ -188,9 +188,9 @@ The `RiskAgent` runs **before every trade execution** — 8 deterministic checks
 ✓  8. Sector concentration ≤ 40%
 ```
 
-All thresholds live in `agents/risk/policy.yaml` — adjustable without touching code.
+All thresholds live in `agents/risk/policy.yaml`, adjustable without touching code.
 
-**Why no LLM in risk?** Risk decisions must be auditable, reproducible, and fast. An LLM could argue its way past a stop-loss rule on a bad day. Deterministic code cannot.
+**Why no LLM in risk?** Risk decisions must be auditable, reproducible, and fast. An LLM could rationalize its way past a stop-loss rule on a bad day. Deterministic code cannot.
 
 ---
 
@@ -203,17 +203,17 @@ A 7-page React 18 dashboard with real-time WebSocket updates. Every trade, signa
 | **Overview** | Live stat cards (today's trades, win rate, P&L), recent signals, latest agent investigation with reasoning |
 | **Live Feed** | Scrolling real-time stream of every signal fired + full agent reasoning trace (expandable) |
 | **Portfolio** | Current open positions, account equity, cumulative P&L area chart |
-| **Trade Journal** | Complete history of every trade — entry, exit, P&L, agent confidence, full reasoning |
+| **Trade Journal** | Complete history of every trade: entry, exit, P&L, agent confidence, full reasoning |
 | **Backtest** | Run any symbol on any date range through the signal engine. See equity curve + trade log |
 | **Analytics** | 5 charts: P&L timeline, per-trade bar chart, signal heatmap (win rate by type), hourly activity, top symbols |
 | **Alerts** | Notification log with level filters (success / warning / error / info), auto-refreshes every 5s |
 
 ### UI Engineering
 
-- **Real-time updates** via `useWebSocket` hook — maintains a 200-event circular buffer, no polling
-- **Dark / Light mode** — CSS variable design system, toggled with `data-theme` attribute on `<html>`, persisted in `localStorage`
-- **Fully responsive** — 3 breakpoints (900px tablet, 600px mobile, 480px small mobile), mobile bottom navigation for thumb reach
-- **Zero UI framework** — pure CSS design system with variables for spacing, color, and typography
+- **Real-time updates** via `useWebSocket` hook, maintains a 200-event circular buffer with no polling
+- **Dark / Light mode** with a CSS variable design system, toggled via `data-theme` on `<html>`, persisted in `localStorage`
+- **Fully responsive** with 3 breakpoints (900px tablet, 600px mobile, 480px small mobile) and mobile bottom navigation
+- **Zero UI framework**, pure CSS design system with variables for spacing, color, and typography
 
 ---
 
@@ -245,14 +245,14 @@ signal fires → asyncio.Queue(maxsize=100) → WebSocketManager.broadcast()
 ### Database Schema (PostgreSQL / Supabase)
 
 ```sql
-symbols          — watchlist (20 rows)
-signals          — every signal that ever fired (append-only)
-trades           — full trade record: entry/exit/PnL/agent reasoning
-signal_stats     — aggregated win rate per signal type (rebuilt nightly)
-portfolio_snapshots — equity curve sampled every 15 minutes
+symbols             -- watchlist (20 rows)
+signals             -- every signal that ever fired (append-only)
+trades              -- full trade record: entry/exit/PnL/agent reasoning
+signal_stats        -- aggregated win rate per signal type (rebuilt nightly)
+portfolio_snapshots -- equity curve sampled every 15 minutes
 ```
 
-Every query uses **parameterized SQL** (`%s` placeholders) and `RealDictCursor` — rows return as dicts, serialized directly to JSON with zero transformation.
+Every query uses **parameterized SQL** (`%s` placeholders) and `RealDictCursor`. Rows return as dicts, serialized directly to JSON with zero transformation.
 
 DB access is via `psycopg2.ThreadedConnectionPool(minconn=2, maxconn=10)` bridged to async via `asyncio.to_thread()`.
 
@@ -262,7 +262,7 @@ DB access is via `psycopg2.ThreadedConnectionPool(minconn=2, maxconn=10)` bridge
 
 | Layer | Technology | Why |
 |---|---|---|
-| **Agent Framework** | LangGraph 0.2 | Typed state machine — debuggable, not a black box |
+| **Agent Framework** | LangGraph 0.2 | Typed state machine, debuggable, not a black box |
 | **LLM** | GPT-4o-mini (OpenAI) | Cost-efficient reasoning with structured output |
 | **Backend** | FastAPI 0.115 | Async-native, built-in WebSocket, automatic OpenAPI docs |
 | **Market Data** | Alpaca REST + WebSocket | Paper trading API + real-time bars |
@@ -306,7 +306,7 @@ POLYGON_API_KEY=your_polygon_key
 OPENAI_API_KEY=your_openai_key
 DATABASE_URL=postgresql://user:pass@host:5432/postgres
 
-# Optional — real phone/email notifications
+# Optional (Telegram/email notifications)
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
 SMTP_USER=your@gmail.com
@@ -343,7 +343,7 @@ curl -X POST "http://localhost:8000/test/fire-signal?symbol=NVDA&signal_type=vol
 
 Watch the agent investigate live on the **Live Feed** page.
 
-### Docker (Full Stack — One Command)
+### Docker (Full Stack, One Command)
 
 ```bash
 docker compose up --build
@@ -359,7 +359,7 @@ docker compose up --build
 python -m pytest tests/test_e2e.py -v
 ```
 
-**20 tests — all pass — zero API keys needed** (all external calls are mocked).
+**20 tests, all passing, zero API keys needed** (all external calls are mocked).
 
 | Test Suite | What's Covered |
 |---|---|
@@ -430,7 +430,7 @@ sigma/
 ├── tests/
 │   └── test_e2e.py        # 20 tests, fully mocked
 │
-├── main.py                # System entry point — asyncio.gather() orchestrator
+├── main.py                # System entry point, asyncio.gather() orchestrator
 ├── config.py              # Pydantic settings (reads from .env)
 ├── requirements.txt
 ├── Dockerfile             # Multi-stage Python backend image
@@ -444,12 +444,12 @@ sigma/
 
 | Property | Implementation |
 |---|---|
-| **Paper trading enforced in code** | `paper=True` hardcoded in `alpaca_client.py` — not a config flag |
+| **Paper trading enforced in code** | `paper=True` hardcoded in `alpaca_client.py`, not a config flag |
 | **No real money risk** | All trades execute in Alpaca's sandbox environment |
-| **Deterministic risk gate** | Risk agent uses zero LLM — auditable, predictable, fast |
-| **Idempotent orders** | `client_order_id = f"{signal_id}-{timestamp}"` — broker rejects duplicates on crash/restart |
+| **Deterministic risk gate** | Risk agent uses zero LLM; auditable, predictable, fast |
+| **Idempotent orders** | `client_order_id = f"{signal_id}-{timestamp}"` so the broker rejects duplicates on crash/restart |
 | **Graceful shutdown** | SIGINT/SIGTERM handlers cancel all coroutines, close DB pool, send WebSocket close frames |
-| **API keys protected** | `.env` in `.gitignore` — never committed |
+| **API keys protected** | `.env` in `.gitignore`, never committed |
 
 ---
 
@@ -458,11 +458,11 @@ sigma/
 **1. LangGraph over raw tool-use loops**
 LangGraph gives explicit state management and typed transitions. When something goes wrong, you can see exactly which node failed and what state it was in. Raw loops are opaque.
 
-**2. Deterministic risk — no LLM**
+**2. Deterministic risk, no LLM**
 The risk agent is pure code. An LLM can rationalize anything; risk rules must be absolute. Separating subjective reasoning (strategy agent) from non-negotiable constraints (risk agent) is the key architectural insight.
 
 **3. asyncio.Queue over Redis**
-Zero external dependency for the signal pipeline. Redis would add infrastructure overhead for a problem an in-process queue solves completely — as long as we're single-process, which we are.
+Zero external dependency for the signal pipeline. Redis would add infrastructure overhead for a problem an in-process queue solves completely, as long as the system stays single-process.
 
 **4. 6 tool-call budget cap**
 Without a hard cap, the agent can loop on edge cases and burn $10 in API costs on one signal. The cap is the difference between a $5/month system and a $500/month system.
@@ -486,7 +486,7 @@ GitHub Actions runs on every push to `master`:
 
 ## Author
 
-**Sahil Khalsa** — [GitHub](https://github.com/Sahil-Khalsa)
+**Sahil Khalsa** | [GitHub](https://github.com/Sahil-Khalsa)
 
 Built from scratch as a full-stack AI engineering project demonstrating: autonomous agent design, real-time event pipelines, production React dashboards, and end-to-end system integration.
 
